@@ -1,18 +1,5 @@
 package pkg
 
-import (
-	"time"
-)
-
-type ImageDigest struct {
-	Registry       string
-	Image          string
-	Tag            string
-	ManifestDigest string
-	BlobsDigest    string
-	Created        time.Time
-}
-
 func Vacuum(registry string, reserve int) {
 	execGarbageCollect()
 	cleanupOldImages(registry, reserve)
@@ -24,11 +11,20 @@ func execGarbageCollect() {
 }
 
 func cleanupOldImages(registry string, reserve int) {
-	digests := getImages(registry, reserve)
-	println(len(digests))
+	images := getImages(registry)
+	for i := range images {
+		println(i)
+		digests := getImageDigests(registry, images[i], reserve)
+		println(len(digests))
+
+	}
 }
 
-func getImages(registry string, reserve int) (digest []ImageDigest) {
+func getImages(registry string) (images []string) {
+	return
+}
+
+func getImageDigests(registry string, image string, reserve int) (digest []ImageDigest) {
 
 	return
 }
