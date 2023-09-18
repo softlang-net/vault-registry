@@ -1,6 +1,6 @@
 package main
 
-import "github.com/softlang-net/xRegistry/pkg"
+import "github.com/softlang-net/vault-registry/pkg"
 
 func main() {
 	println("hello xRegistry")

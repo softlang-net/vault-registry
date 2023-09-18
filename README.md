@@ -1,8 +1,8 @@
-# xRegistry
-Auto cleanup old image tags with garbage-collect, base on official registry v2.
+# Vault-Registry
+Auto vacuum old images with garbage-collect, base on official registry v2.
 
-Have you ever bother to cleanup your private docker-registry?
-xRegistry is consequently for omitting that. 
+Have you ever bother to vacuum your private docker-registry?
+Vault-Registry is consequently for omitting that. 
 
 Let's try:
 
@@ -12,7 +12,7 @@ Let's try:
 
 ```
 
-- compose.yaml for run xRegistry
+- compose.yaml for run vault-registry
 
 ```yaml
 
