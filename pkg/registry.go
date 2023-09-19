@@ -1,5 +1,11 @@
 package pkg
 
+import (
+	"encoding/json"
+	"log"
+	"net/url"
+)
+
 func Vacuum(registry string, reserve int) {
 	execGarbageCollect()
 	cleanupOldImages(registry, reserve)
@@ -12,16 +18,28 @@ func execGarbageCollect() {
 }
 
 func cleanupOldImages(registry string, reserve int) {
-	images := getImages(registry)
-	for _, img := range images {
-		println(img)
+	catalog := getCatalog(registry)
+	for _, img := range catalog.Repositories {
+		log.Println(registry, img)
 		digests := getImageDigests(registry, img, reserve)
-		println(len(digests))
+		log.Println(len(digests))
 	}
 }
 
-func getImages(registry string) (images []string) {
-
+func getCatalog(registry string) (catalog Catalog) {
+	url, _ := url.JoinPath(registry, "/v2/_catalog")
+	rpHeader, rpBody, err := RequestRegistry(url, "GET")
+	if err != nil {
+		log.Panicln(err)
+	} else {
+		for k := range rpHeader {
+			log.Println(k, rpHeader.Get(k))
+		}
+		err = json.Unmarshal(rpBody, &catalog)
+		if err != nil {
+			log.Panicln(err)
+		}
+	}
 	return
 }
 

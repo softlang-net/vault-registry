@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -10,20 +9,23 @@ import (
 )
 
 func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []byte, err error) {
+
 	// Create a new HTTP request.
-	req, err := http.NewRequest("GET", url, nil)
+	log.Println(method, url)
+	req, err := http.NewRequest("GET", "http://localhost:5000/v2/_catalog", nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Panicln(err)
+		return
 	}
 
-	// Set the custom header.
 	req.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
 
 	// Make the request.
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Panicln(err)
+		return
 	}
 
 	defer resp.Body.Close()
@@ -31,13 +33,13 @@ func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []
 	// Read the response body.
 	rpBody, err = io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Panicln(err)
 	}
 
-	rpHeader = resp.Request.Response.Header.Clone()
+	rpHeader = resp.Header.Clone()
 
 	// Print the response body.
-	fmt.Println(string(rpBody))
+	log.Println(string(rpBody))
 	return
 }
 
@@ -48,7 +50,7 @@ func ShellCall(name string, args ...string) {
 	done := make(chan bool)
 	go func() {
 		for scanner.Scan() {
-			fmt.Println(scanner.Text())
+			log.Println(scanner.Text())
 		}
 		done <- true
 	}()
@@ -56,7 +58,7 @@ func ShellCall(name string, args ...string) {
 	<-done
 	err := cmd.Wait()
 	if err != nil {
-		fmt.Println((err))
+		log.Panicln(err)
 	}
 }
 
@@ -67,7 +69,7 @@ func ShellCallResult(name string, args ...string) string {
 	done := make(chan bool)
 	go func() {
 		for scanner.Scan() {
-			fmt.Println(scanner.Text())
+			log.Println(scanner.Text())
 		}
 		done <- true
 	}()
@@ -75,7 +77,7 @@ func ShellCallResult(name string, args ...string) string {
 	<-done
 	err := cmd.Wait()
 	if err != nil {
-		fmt.Println((err))
+		log.Println((err))
 	}
 	return ""
 }
@@ -92,7 +94,7 @@ func ShellPipeStdin() {
 	done := make(chan bool)
 	go func() {
 		for scanner.Scan() {
-			fmt.Println(scanner.Text())
+			log.Println(scanner.Text())
 		}
 		done <- true
 	}()

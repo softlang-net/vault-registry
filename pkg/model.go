@@ -12,3 +12,7 @@ type ImageDigest struct {
 	BlobsDigest    string
 	Created        time.Time
 }
+
+type Catalog struct {
+	Repositories []string `json:"repositories,omitempty"`
+}
