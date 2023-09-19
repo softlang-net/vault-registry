@@ -10,12 +10,12 @@ import (
 )
 
 func TestCatalog(t *testing.T) {
-	pkg.Vacuum("http://localhost:5000", 10)
+	pkg.Vacuum("http://localhost:9005", 10)
 }
 
 func TestHttpGet(t *testing.T) {
 	// Create a new HTTP request.
-	req, err := http.NewRequest("GET", "http://localhost:5000/v2/_catalog", nil)
+	req, err := http.NewRequest("GET", "http://localhost:9005/v2/_catalog", nil)
 	if err != nil {
 		log.Println(err)
 		return

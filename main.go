@@ -8,7 +8,7 @@ func main() {
 	// log.SetOutput(io.Discard)
 	checkCircumstance()
 	println("hello, welcome  vault-registry")
-	url := "http://127.0.0.1:5000"
+	url := "http://127.0.0.1:9005"
 	pkg.Vacuum(url, 10)
 }
 

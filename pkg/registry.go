@@ -103,10 +103,11 @@ func getImageDigest(registry string, image string, tag string) (digest ImageDige
 		if err != nil {
 			log.Panicln(err)
 		}
+		// blobs digest
 		//log.Println(">> config", jsdata["config"])
 		config := ConvertInterfaceToDict(jsdata["config"])
 		digest.BlobsDigest = config["digest"].(string)
-		digest.Created = getDigestCreated(registry, image, digest.ManifestDigest)
+		digest.Created = getDigestCreated(registry, image, digest.BlobsDigest)
 	}
 	return
 }
@@ -114,8 +115,8 @@ func getImageDigest(registry string, image string, tag string) (digest ImageDige
 /*
 request url /v2/<name>/blobs/<digest>
 */
-func getDigestCreated(registry string, image string, manifestsDigest string) (created time.Time) {
-	url, _ := url.JoinPath(registry, "/v2/", image, "manifests", manifestsDigest)
+func getDigestCreated(registry string, image string, blobsDigest string) (created time.Time) {
+	url, _ := url.JoinPath(registry, "/v2/", image, "blobs", blobsDigest)
 	_, rpBody, err := RequestRegistry(url, "GET")
 	if err != nil {
 		log.Panicln(err)
@@ -126,9 +127,19 @@ func getDigestCreated(registry string, image string, manifestsDigest string) (cr
 		if err != nil {
 			log.Panicln(err)
 		}
-		//log.Println(">> config", jsdata["config"])
+		created1 := jsdata["created"]
+		log.Println(">> created", created1)
 		//config := ConvertInterfaceToDict(jsdata["config"])
-		created = time.Now()
+		created, _ = time.Parse(time.RFC3339Nano, created1.(string))
 	}
 	return
+}
+
+/*
+https://docs.docker.com/registry/spec/api/#deleting-an-image
+
+	DELETE /v2/<name>/manifests/<reference>
+*/
+func DeleteImagManifest() {
+
 }
