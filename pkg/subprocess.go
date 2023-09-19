@@ -37,9 +37,6 @@ func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []
 	}
 
 	rpHeader = resp.Header.Clone()
-
-	// Print the response body.
-	log.Println(string(rpBody))
 	return
 }
 

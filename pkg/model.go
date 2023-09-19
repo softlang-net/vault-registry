@@ -35,3 +35,15 @@ func ConvertInterfaceToStringSlice(interfaceValue interface{}) []string {
 
 	return stringSlice
 }
+
+func ConvertInterfaceToDict(interfaceValue interface{}) map[string]interface{} {
+	if interfaceValue == nil {
+		return nil
+	}
+
+	// If the interfaceValue is a slice of strings, return it directly.
+	if stringSlice, ok := interfaceValue.(map[string]interface{}); ok {
+		return stringSlice
+	}
+	return nil
+}
