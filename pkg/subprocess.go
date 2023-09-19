@@ -12,7 +12,7 @@ func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []
 
 	// Create a new HTTP request.
 	log.Println(method, url)
-	req, err := http.NewRequest("GET", "http://localhost:5000/v2/_catalog", nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Panicln(err)
 		return
