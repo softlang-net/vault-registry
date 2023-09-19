@@ -1,3 +1,8 @@
 {
     "go.gopath": "${workspaceFolder}/.go",
+    "go.inferGopath": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }

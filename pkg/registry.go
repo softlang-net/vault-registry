@@ -7,20 +7,21 @@ func Vacuum(registry string, reserve int) {
 }
 
 func execGarbageCollect() {
-
+	// bin/registry garbage-collect /etc/docker/registry/config.yml
+	//ShellCall("registry", "garbage-collect", "/etc/docker/registry/config.yml")
 }
 
 func cleanupOldImages(registry string, reserve int) {
 	images := getImages(registry)
-	for i := range images {
-		println(i)
-		digests := getImageDigests(registry, images[i], reserve)
+	for _, img := range images {
+		println(img)
+		digests := getImageDigests(registry, img, reserve)
 		println(len(digests))
-
 	}
 }
 
 func getImages(registry string) (images []string) {
+
 	return
 }
 
