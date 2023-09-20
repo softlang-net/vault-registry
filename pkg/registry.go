@@ -22,9 +22,9 @@ func execGarbageCollect() {
 func cleanupOldImages(registry string, reserve int) {
 	catalog := getCatalog(registry)
 	for _, img := range catalog.Repositories {
-		log.Println(registry, img)
+		DebugLog(registry, img)
 		digests := getImageDigests(registry, img, reserve)
-		log.Println(len(digests))
+		deleteImagManifest(digests)
 	}
 }
 
@@ -46,7 +46,7 @@ func getCatalog(registry string) (catalog Catalog) {
 		log.Panicln(err)
 	} else {
 		for k := range rpHeader {
-			log.Println(k, rpHeader.Get(k))
+			DebugLog(k, rpHeader.Get(k))
 		}
 		err = json.Unmarshal(rpBody, &catalog)
 		if err != nil {
@@ -67,36 +67,41 @@ func getImageDigests(registry string, image string, reserve int) (digests []Imag
 		log.Panicln(err)
 	} else {
 		for k := range rpHeader {
-			log.Println(k, rpHeader.Get(k))
+			DebugLog(k, rpHeader.Get(k))
 		}
 		var jsdata map[string]interface{}
 		err = json.Unmarshal(rpBody, &jsdata)
 		if err != nil {
 			log.Panicln(err)
 		}
-		log.Println(">> tags", jsdata["tags"])
+		DebugLog(">> tags", jsdata["tags"])
 		tags := ConvertInterfaceToStringSlice(jsdata["tags"])
 
 		manifests := make(map[string][]string)
 
 		for _, tag := range tags {
-			log.Println(registry, image, tag)
+			DebugLog(registry, image, tag)
 			digest := getImageDigest(registry, image, tag)
 			if tt, ok := manifests[digest.ManifestDigest]; ok {
 				manifests[digest.ManifestDigest] = append(tt, tag)
-				log.Println(">> Repeated tags:", image, manifests[digest.ManifestDigest])
+				DebugLog(">> Repeated tags:", image, manifests[digest.ManifestDigest])
 				continue
 			}
 			manifests[digest.ManifestDigest] = []string{tag}
-			log.Println(digest)
+			DebugLog(digest)
 			digests = append(digests, digest)
 		}
-		log.Println(image, "authentic count", len(digests))
+		DebugLog(image, "authentic count", len(digests))
 		sort.Slice(digests, func(i, j int) bool {
 			return digests[i].Created.Compare(digests[j].Created) > 0
 		})
-		for _, v := range digests {
-			log.Println(v.ToString())
+
+		// skip reserved
+		cntVacuum := len(digests) - reserve
+		if cntVacuum <= 0 {
+			digests = make([]ImageDigest, 0)
+		} else {
+			digests = digests[reserve:]
 		}
 	}
 	return
@@ -123,7 +128,7 @@ func getImageDigest(registry string, image string, tag string) (digest ImageDige
 			log.Panicln(err)
 		}
 		// blobs digest
-		//log.Println(">> config", jsdata["config"])
+		//DebugLog(">> config", jsdata["config"])
 		config := ConvertInterfaceToDict(jsdata["config"])
 		digest.BlobsDigest = config["digest"].(string)
 		digest.Created = getDigestCreated(registry, image, digest.BlobsDigest)
@@ -147,7 +152,7 @@ func getDigestCreated(registry string, image string, blobsDigest string) (create
 			log.Panicln(err)
 		}
 		created1 := jsdata["created"]
-		log.Println(">> created", created1)
+		DebugLog(">> created", created1)
 		//config := ConvertInterfaceToDict(jsdata["config"])
 		created, _ = time.Parse(time.RFC3339Nano, created1.(string))
 	}
@@ -159,6 +164,15 @@ https://docs.docker.com/registry/spec/api/#deleting-an-image
 
 	DELETE /v2/<name>/manifests/<reference>
 */
-func DeleteImagManifest() {
-
+func deleteImagManifest(digests []ImageDigest) {
+	log.Println()
+	for i, d := range digests {
+		url, _ := url.JoinPath(d.Registry, "/v2/", d.Image, "manifests", d.ManifestDigest)
+		_, _, err := RequestRegistry(url, "DELETE")
+		if err != nil {
+			log.Panicln(err)
+		} else {
+			log.Println(i, "delete:", d.ToString())
+		}
+	}
 }

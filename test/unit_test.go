@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"testing"
 	"time"
 
@@ -20,6 +21,30 @@ func TestConfig(t *testing.T) {
 	t1 := time.Now()
 	t2 := t1.Add(-time.Hour * 48)
 	t.Log(t1.Format(time.RFC3339), t2.Format(time.RFC3339), t1.Compare(t2))
+
+	aa := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	t.Log(aa)
+	aa = aa[5:]
+	t.Log(aa)
+	aa = make([]int, 0)
+	t.Log(aa)
+}
+
+func TestParseAddrPort(t *testing.T) {
+	regex := regexp.MustCompile(`addr:\s*:\d+`)
+	config := `
+version: 1.0
+http:
+	addr: :5000
+	header: aaa
+health:
+	storagedriver:
+	  enabled: true
+	  interval: 10s
+	  threshold: 3
+	`
+	match := regex.FindString(config)
+	t.Log("matched =", match)
 }
 
 func TestTemporary(t *testing.T) {

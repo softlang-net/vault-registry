@@ -2,26 +2,49 @@ package pkg
 
 import (
 	"flag"
+	"log"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 )
+
+func DebugLog(v ...any) {
+	//log.Println(v...)
+}
 
 var (
 	// Initialize a constant from the `PORT` environment variable.
 	URL_REGISTRY string = getConfigString("registry", "vault_registry", "http://localhost:5000")
+	IMG_RESERVED int    = getConfigInt("reserved", "vault_reserved", 500)
 )
 
 /*
 get config value from flag by key, or get from os.environment by keyOfEnv
 */
-func getConfigString(key string, keyOfEnv, valDefault string) (value string) {
+func getConfigString(key, keyOfEnv, valDefault string) (value string) {
 	value = *flag.String(key, "", key)
 	if value == "" {
 		value = os.Getenv(keyOfEnv)
 		if value == "" {
 			value = valDefault
 		}
+	}
+	return
+}
+
+func getConfigInt(key, keyOfEnv string, valDefault int) (value int) {
+	s1 := *flag.String(key, "", key)
+	if s1 == "" {
+		s1 = os.Getenv(keyOfEnv)
+		if s1 == "" {
+			value = valDefault
+			return
+		}
+	}
+	value, err := strconv.Atoi(s1)
+	if err != nil {
+		log.Panicln(err)
 	}
 	return
 }

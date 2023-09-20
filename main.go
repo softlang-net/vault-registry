@@ -9,7 +9,8 @@ func main() {
 	checkCircumstance()
 	println("hello, welcome  vault-registry")
 	url := pkg.URL_REGISTRY
-	pkg.Vacuum(url, 10)
+	reserve := pkg.IMG_RESERVED
+	pkg.Vacuum(url, reserve)
 }
 
 func checkCircumstance() {

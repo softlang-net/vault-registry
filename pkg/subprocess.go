@@ -11,8 +11,8 @@ import (
 func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []byte, err error) {
 
 	// Create a new HTTP request.
-	log.Println(method, url)
-	req, err := http.NewRequest("GET", url, nil)
+	DebugLog(method, url)
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		log.Panicln(err)
 		return
@@ -52,7 +52,7 @@ func ShellCall(name string, args ...string) {
 	done := make(chan bool)
 	go func() {
 		for scanner.Scan() {
-			log.Println(scanner.Text())
+			DebugLog(scanner.Text())
 		}
 		done <- true
 	}()
@@ -71,7 +71,7 @@ func ShellCallResult(name string, args ...string) string {
 	done := make(chan bool)
 	go func() {
 		for scanner.Scan() {
-			log.Println(scanner.Text())
+			DebugLog(scanner.Text())
 		}
 		done <- true
 	}()
@@ -79,7 +79,7 @@ func ShellCallResult(name string, args ...string) string {
 	<-done
 	err := cmd.Wait()
 	if err != nil {
-		log.Println((err))
+		DebugLog((err))
 	}
 	return ""
 }
@@ -96,7 +96,7 @@ func ShellPipeStdin() {
 	done := make(chan bool)
 	go func() {
 		for scanner.Scan() {
-			log.Println(scanner.Text())
+			DebugLog(scanner.Text())
 		}
 		done <- true
 	}()
