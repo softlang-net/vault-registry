@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"flag"
+	"net/url"
 	"os"
 	"time"
 )
@@ -32,6 +33,11 @@ type ImageDigest struct {
 	ManifestDigest string
 	BlobsDigest    string
 	Created        time.Time
+}
+
+func (image *ImageDigest) ToString() string {
+	s, _ := url.JoinPath(image.Registry, image.Image, image.Tag, image.Created.Format(time.RFC3339))
+	return s
 }
 
 type Catalog struct {

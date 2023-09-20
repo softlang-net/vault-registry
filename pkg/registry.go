@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/url"
+	"sort"
 	"time"
 )
 
@@ -91,6 +92,12 @@ func getImageDigests(registry string, image string, reserve int) (digests []Imag
 			digests = append(digests, digest)
 		}
 		log.Println(image, "authentic count", len(digests))
+		sort.Slice(digests, func(i, j int) bool {
+			return digests[i].Created.Compare(digests[j].Created) > 0
+		})
+		for _, v := range digests {
+			log.Println(v.ToString())
+		}
 	}
 	return
 }
@@ -105,6 +112,9 @@ func getImageDigest(registry string, image string, tag string) (digest ImageDige
 	if err != nil {
 		log.Panicln(err)
 	} else {
+		digest.Registry = registry
+		digest.Image = image
+		digest.Tag = tag
 		digest.ManifestDigest = rpHeader.Get("Docker-Content-Digest")
 		// d1.manifests_digest = json1['config']['digest']
 		var jsdata map[string]interface{}

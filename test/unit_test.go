@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/softlang-net/vault-registry/pkg"
 )
@@ -16,6 +17,9 @@ func TestCatalog(t *testing.T) {
 
 func TestConfig(t *testing.T) {
 	t.Log("vault_registry", os.Getenv("vault_registry"))
+	t1 := time.Now()
+	t2 := t1.Add(-time.Hour * 48)
+	t.Log(t1.Format(time.RFC3339), t2.Format(time.RFC3339), t1.Compare(t2))
 }
 
 func TestTemporary(t *testing.T) {
