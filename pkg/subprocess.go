@@ -25,15 +25,20 @@ func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Panicln(err)
-		return
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 && resp.StatusCode != 202 {
+		err1, _ := io.ReadAll(resp.Body)
+		log.Panicln("http-code", resp.StatusCode, string(err1))
+	}
 
 	// Read the response body.
 	rpBody, err = io.ReadAll(resp.Body)
 	if err != nil {
 		log.Panicln(err)
+		return
 	}
 
 	rpHeader = resp.Header.Clone()

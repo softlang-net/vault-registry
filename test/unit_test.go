@@ -4,13 +4,37 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/softlang-net/vault-registry/pkg"
 )
 
 func TestCatalog(t *testing.T) {
-	pkg.Vacuum("http://localhost:9005", 10)
+	pkg.Vacuum(pkg.URL_REGISTRY, 10)
+}
+
+func TestConfig(t *testing.T) {
+	t.Log("vault_registry", os.Getenv("vault_registry"))
+}
+
+func TestTemporary(t *testing.T) {
+	//  dname, err := os.MkdirTemp("", "sampledir")
+	if f, err := os.CreateTemp("", "sample"); err != nil {
+		t.Error(err)
+	} else {
+		f.WriteString("hello, temporary file. To write log")
+		t.Log("temporary file name", f.Name())
+	}
+}
+
+func TestMap(t *testing.T) {
+	digest := make(map[string]int)
+	digest["hello"] = 1
+	digest["hello"] = 2
+	if v, ok := digest["hello"]; ok {
+		t.Log("ok, hello =", v)
+	}
 }
 
 func TestHttpGet(t *testing.T) {

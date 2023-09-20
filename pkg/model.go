@@ -1,8 +1,29 @@
 package pkg
 
 import (
+	"flag"
+	"os"
 	"time"
 )
+
+var (
+	// Initialize a constant from the `PORT` environment variable.
+	URL_REGISTRY string = getConfigString("registry", "vault_registry", "http://localhost:5000")
+)
+
+/*
+get config value from flag by key, or get from os.environment by keyOfEnv
+*/
+func getConfigString(key string, keyOfEnv, valDefault string) (value string) {
+	value = *flag.String(key, "", key)
+	if value == "" {
+		value = os.Getenv(keyOfEnv)
+		if value == "" {
+			value = valDefault
+		}
+	}
+	return
+}
 
 type ImageDigest struct {
 	Registry       string

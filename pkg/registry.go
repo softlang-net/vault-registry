@@ -76,12 +76,21 @@ func getImageDigests(registry string, image string, reserve int) (digests []Imag
 		log.Println(">> tags", jsdata["tags"])
 		tags := ConvertInterfaceToStringSlice(jsdata["tags"])
 
+		manifests := make(map[string][]string)
+
 		for _, tag := range tags {
 			log.Println(registry, image, tag)
 			digest := getImageDigest(registry, image, tag)
+			if tt, ok := manifests[digest.ManifestDigest]; ok {
+				manifests[digest.ManifestDigest] = append(tt, tag)
+				log.Println(">> Repeated tags:", image, manifests[digest.ManifestDigest])
+				continue
+			}
+			manifests[digest.ManifestDigest] = []string{tag}
 			log.Println(digest)
 			digests = append(digests, digest)
 		}
+		log.Println(image, "authentic count", len(digests))
 	}
 	return
 }
