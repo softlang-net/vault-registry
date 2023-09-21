@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"encoding/base64"
 	"flag"
 	"log"
 	"net/url"
@@ -65,6 +66,12 @@ func (image *ImageDigest) ToString() string {
 
 type Catalog struct {
 	Repositories []string `json:"repositories,omitempty"`
+}
+
+func Base64EncodeAuthentication(username, password string) string {
+	credentials := username + ":" + password
+	encodedCredentials := base64.StdEncoding.EncodeToString([]byte(credentials))
+	return encodedCredentials
 }
 
 func ConvertInterfaceToStringSlice(interfaceValue interface{}) []string {

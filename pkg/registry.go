@@ -42,7 +42,7 @@ List all images in a private registry-v2.
 */
 func getCatalog(registry string) (catalog Catalog) {
 	url, _ := url.JoinPath(registry, "/v2/_catalog")
-	rpHeader, rpBody, err := RequestRegistry(url, "GET")
+	rpHeader, rpBody, err := RequestRegistry(url, "GET", "")
 	if err != nil {
 		log.Panicln(err)
 	} else {
@@ -63,7 +63,7 @@ func getCatalog(registry string) (catalog Catalog) {
 */
 func getImageDigests(registry string, image string, reserve int) (digests []ImageDigest) {
 	url, _ := url.JoinPath(registry, "/v2/", image, "/tags/list")
-	rpHeader, rpBody, err := RequestRegistry(url, "GET")
+	rpHeader, rpBody, err := RequestRegistry(url, "GET", "")
 	if err != nil {
 		log.Panicln(err)
 	} else {
@@ -114,7 +114,7 @@ func getImageDigests(registry string, image string, reserve int) (digests []Imag
 */
 func getImageDigest(registry string, image string, tag string) (digest ImageDigest) {
 	url, _ := url.JoinPath(registry, "/v2/", image, "manifests", tag)
-	rpHeader, rpBody, err := RequestRegistry(url, "GET")
+	rpHeader, rpBody, err := RequestRegistry(url, "GET", "")
 	if err != nil {
 		log.Panicln(err)
 	} else {
@@ -142,7 +142,7 @@ request url /v2/<name>/blobs/<digest>
 */
 func getDigestCreated(registry string, image string, blobsDigest string) (created time.Time) {
 	url, _ := url.JoinPath(registry, "/v2/", image, "blobs", blobsDigest)
-	_, rpBody, err := RequestRegistry(url, "GET")
+	_, rpBody, err := RequestRegistry(url, "GET", "")
 	if err != nil {
 		log.Panicln(err)
 	} else {
@@ -166,10 +166,11 @@ https://docs.docker.com/registry/spec/api/#deleting-an-image
 	DELETE /v2/<name>/manifests/<reference>
 */
 func deleteImagManifest(digests []ImageDigest) {
-	log.Println()
+	log.Println("*** try to delete ***", len(digests))
 	for i, d := range digests {
 		url, _ := url.JoinPath(d.Registry, "/v2/", d.Image, "manifests", d.ManifestDigest)
-		_, _, err := RequestRegistry(url, "DELETE")
+		//auth := Base64EncodeAuthentication("aaa", "aaa")
+		_, _, err := RequestRegistry(url, "DELETE", auth)
 		if err != nil {
 			log.Panicln(err)
 		} else {

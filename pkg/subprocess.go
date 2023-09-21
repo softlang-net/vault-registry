@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []byte, err error) {
+func RequestRegistry(url string, method string, authBasic string) (rpHeader http.Header, rpBody []byte, err error) {
 
 	// Create a new HTTP request.
 	DebugLog(method, url)
@@ -20,6 +20,9 @@ func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []
 	}
 
 	req.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+	if authBasic != "" {
+		req.Header.Set("Authorization", "Basic "+authBasic)
+	}
 
 	// Make the request.
 	client := &http.Client{Timeout: 10 * time.Second}
