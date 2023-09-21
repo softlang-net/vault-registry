@@ -10,7 +10,7 @@ import (
 )
 
 func DebugLog(v ...any) {
-	//log.Println(v...)
+	log.Println(v...)
 }
 
 var (

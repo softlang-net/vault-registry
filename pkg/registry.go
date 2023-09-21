@@ -15,6 +15,7 @@ func Vacuum(registry string, reserve int) {
 }
 
 func execGarbageCollect() {
+	// registry garbage-collect /etc/docker/registry/config.yml -m=true
 	// bin/registry garbage-collect /etc/docker/registry/config.yml
 	//ShellCall("registry", "garbage-collect", "/etc/docker/registry/config.yml")
 }

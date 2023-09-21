@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"time"
 )
 
 func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []byte, err error) {
@@ -21,7 +22,7 @@ func RequestRegistry(url string, method string) (rpHeader http.Header, rpBody []
 	req.Header.Set("Accept", "application/vnd.docker.distribution.manifest.v2+json")
 
 	// Make the request.
-	client := &http.Client{}
+	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Panicln(err)
