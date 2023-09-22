@@ -43,12 +43,14 @@ List all images in a private registry-v2.
 func getCatalog(registry string) (catalog Catalog) {
 	url, _ := url.JoinPath(registry, "/v2/_catalog")
 	rpHeader, rpBody, err := RequestRegistry(url, "GET", "")
+
 	if err != nil {
 		log.Panicln(err)
 	} else {
 		for k := range rpHeader {
 			DebugLog(k, rpHeader.Get(k))
 		}
+
 		err = json.Unmarshal(rpBody, &catalog)
 		if err != nil {
 			log.Panicln(err)
@@ -64,20 +66,23 @@ func getCatalog(registry string) (catalog Catalog) {
 func getImageDigests(registry string, image string, reserve int) (digests []ImageDigest) {
 	url, _ := url.JoinPath(registry, "/v2/", image, "/tags/list")
 	rpHeader, rpBody, err := RequestRegistry(url, "GET", "")
+
 	if err != nil {
 		log.Panicln(err)
 	} else {
 		for k := range rpHeader {
 			DebugLog(k, rpHeader.Get(k))
 		}
+
 		var jsdata map[string]interface{}
 		err = json.Unmarshal(rpBody, &jsdata)
+
 		if err != nil {
 			log.Panicln(err)
 		}
+
 		DebugLog(">> tags", jsdata["tags"])
 		tags := ConvertInterfaceToStringSlice(jsdata["tags"])
-
 		manifests := make(map[string][]string)
 
 		for _, tag := range tags {
@@ -123,13 +128,16 @@ func getImageDigest(registry string, image string, tag string) (digest ImageDige
 		digest.Tag = tag
 		digest.ManifestDigest = rpHeader.Get("Docker-Content-Digest")
 		// d1.manifests_digest = json1['config']['digest']
+
 		var jsdata map[string]interface{}
 		err = json.Unmarshal(rpBody, &jsdata)
+
 		if err != nil {
 			log.Panicln(err)
 		}
 		// blobs digest
 		//DebugLog(">> config", jsdata["config"])
+
 		config := ConvertInterfaceToDict(jsdata["config"])
 		digest.BlobsDigest = config["digest"].(string)
 		digest.Created = getDigestCreated(registry, image, digest.BlobsDigest)
@@ -143,6 +151,7 @@ request url /v2/<name>/blobs/<digest>
 func getDigestCreated(registry string, image string, blobsDigest string) (created time.Time) {
 	url, _ := url.JoinPath(registry, "/v2/", image, "blobs", blobsDigest)
 	_, rpBody, err := RequestRegistry(url, "GET", "")
+
 	if err != nil {
 		log.Panicln(err)
 	} else {
@@ -152,6 +161,7 @@ func getDigestCreated(registry string, image string, blobsDigest string) (create
 		if err != nil {
 			log.Panicln(err)
 		}
+
 		created1 := jsdata["created"]
 		DebugLog(">> created", created1)
 		//config := ConvertInterfaceToDict(jsdata["config"])
@@ -171,6 +181,7 @@ func deleteImagManifest(digests []ImageDigest) {
 		url, _ := url.JoinPath(d.Registry, "/v2/", d.Image, "manifests", d.ManifestDigest)
 		auth := Base64EncodeAuthentication("aaa", "aaa")
 		_, _, err := RequestRegistry(url, "DELETE", auth)
+
 		if err != nil {
 			log.Panicln(err)
 		} else {
