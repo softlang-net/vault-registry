@@ -169,7 +169,7 @@ func deleteImagManifest(digests []ImageDigest) {
 	log.Println("*** try to delete ***", len(digests))
 	for i, d := range digests {
 		url, _ := url.JoinPath(d.Registry, "/v2/", d.Image, "manifests", d.ManifestDigest)
-		//auth := Base64EncodeAuthentication("aaa", "aaa")
+		auth := Base64EncodeAuthentication("aaa", "aaa")
 		_, _, err := RequestRegistry(url, "DELETE", auth)
 		if err != nil {
 			log.Panicln(err)
