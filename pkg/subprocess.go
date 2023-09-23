@@ -68,14 +68,17 @@ func ShellCall(name string, args ...string) {
 	}
 }
 
-func ShellCallResult(name string, args ...string) string {
+func ShellCallResult(name string, args ...string) (result string) {
 	cmd := exec.Command(name, args...)
 	cmdReader, _ := cmd.StdoutPipe()
 	scanner := bufio.NewScanner(cmdReader)
 	done := make(chan bool)
+
 	go func() {
 		for scanner.Scan() {
-			DebugLog(scanner.Text())
+			s1 := scanner.Text()
+			DebugLog(s1)
+			result += s1
 		}
 		done <- true
 	}()
@@ -85,7 +88,7 @@ func ShellCallResult(name string, args ...string) string {
 	if err != nil {
 		DebugLog((err))
 	}
-	return ""
+	return
 }
 
 func ShellPipeStdin() {
@@ -114,8 +117,10 @@ func ShellPipeStdin() {
 		io.WriteString(stdin, s1)
 		io.WriteString(stdin, "echo 'done!'")
 	}()
+
 	err = cmd.Start()
 	<-done
+
 	if err != nil {
 		log.Fatal(err)
 	} else {
