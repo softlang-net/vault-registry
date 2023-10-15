@@ -12,6 +12,9 @@ import (
 	"github.com/softlang-net/vault-registry/pkg"
 )
 
+func TestYaml(t *testing.T) {
+}
+
 func TestCatalog(t *testing.T) {
 	pkg.Vacuum(pkg.URL_REGISTRY, 10)
 }

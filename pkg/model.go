@@ -36,7 +36,7 @@ func getConfigString(key, keyOfEnv, valDefault string) (value string) {
 
 func getConfigInt(key, keyOfEnv string, valDefault int) (value int) {
 	s1 := *flag.String(key, "", key)
-	if s1 == "" {
+	if s1 == "" && keyOfEnv != "" {
 		s1 = os.Getenv(keyOfEnv)
 		if s1 == "" {
 			value = valDefault
