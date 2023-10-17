@@ -11,13 +11,13 @@ import (
 )
 
 var (
-	image string
-	keep  int
+	image   string
+	reserve int
 )
 
 func init() {
 	flag.StringVar(&image, "image", "", "-image=xxx:5000/abc/xyz:latest")
-	flag.IntVar(&keep, "keep", 10, "-keep=10")
+	flag.IntVar(&reserve, "reserve", 10, "-reserve=10")
 }
 
 func main() {
@@ -45,13 +45,17 @@ func isVacuumAnImage() bool {
 
 func vacuumImage() {
 	flag.Parse()
-	println(image, keep)
+	println(image)
+	if !strings.Contains(image, "://") {
+		image = "https://" + image
+	}
 	uri, err := url.Parse(image)
 	if err != nil {
 		log.Fatalln(err)
 	} else {
 		println(uri.Host, uri.Port(), uri.Path)
 	}
+	registry := uri.Scheme + uri.Host + ":" + uri.Port()
 
-	pkg.VacuumAnImage(image, keep)
+	pkg.VacuumAnImage(registry, uri.Path, reserve)
 }
